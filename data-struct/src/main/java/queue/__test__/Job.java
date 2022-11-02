@@ -33,4 +33,10 @@ public class Job implements Delayed {
         Job job = (Job) o;
         return (int) (this.getDelay(TimeUnit.MICROSECONDS) - job.getDelay(TimeUnit.MICROSECONDS));
     }
+
+    public String getName() {
+        return name;
+    }
+    
+    
 }
