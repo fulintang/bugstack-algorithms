@@ -37,6 +37,14 @@ public class Job implements Delayed {
     public String getName() {
         return name;
     }
-    
+
+    @Override
+    public String toString() {
+        return "Job{" +
+                "name='" + name + '\'' +
+                ", begin=" + begin +
+                ", delayTime=" + delayTime +
+                '}';
+    }
     
 }

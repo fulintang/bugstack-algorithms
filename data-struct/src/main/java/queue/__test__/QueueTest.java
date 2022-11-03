@@ -14,9 +14,9 @@ import queue.Queue;
  * @since 2022/10/31 18:11
  */
 public class QueueTest {
-    
+
     private final Logger log = LoggerFactory.getLogger(QueueTest.class);
-    
+
     @Test
     public void testQueue() throws InterruptedException {
         Queue<Job> queue = new DelayQueue<>();
@@ -33,8 +33,20 @@ public class QueueTest {
         queue.add(new Job("9号", 9000L));
         queue.add(new Job("8号", 8000L));
 
-        queue.add(new Job("2号", 2000L));
-        
+        //queue.add(new Job("2号", 2000L));
+
+        while (true) {
+            Job poll = queue.poll();
+            if (null == poll) {
+                Thread.sleep(10);
+                if (queue.peek() == null) {
+                    break;
+                }
+                continue;
+            }
+            log.info("{}", poll);
+        }
+
     }
-    
+
 }

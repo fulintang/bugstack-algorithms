@@ -80,7 +80,7 @@ public class PriorityQueue<E> implements Queue<E> {
      * @param k 标识
      * @param x 数据
      */
-    @SuppressWarnings("all")
+    @SuppressWarnings("unchecked")
     private void siftUpComparable(int k, E x) {
         Comparable<? super E> key = (Comparable<? super E>) x;
         while (k > 0) {
@@ -105,45 +105,55 @@ public class PriorityQueue<E> implements Queue<E> {
     @Override
     @SuppressWarnings("unchecked")
     public E poll() {
+        // 如果队列为空那么就不高
         if (size == 0)
             return null;
-        int s = --size;
-        E result = (E) queue[0];
-        E x = (E) queue[s];
-        queue[s] = null;
+        int s = --size; // 减1
+        E result = (E) queue[0];// 将出队的元素
+        E x = (E) queue[s]; // 最后一位
+        queue[s] = null; // 将最后一位置为空
         if (s != 0)
             siftDown(0, x);
         return result;
     }
 
     private void siftDown(int k, E x) {
-        siftDownComparable(k,  x);
+        siftDownComparable(k, x);
     }
 
+    @SuppressWarnings("unchecked")
     private void siftDownComparable(int k, E x) {
         Comparable<? super E> key = (Comparable<? super E>) x;
         int half = size >>> 1;
         while (k < half) {
             // 找到左子节点和右子节点，找出两个哪个最大
-            int child = (k << 1) + 1;
-            Object c = queue[child];
+            int child = (k << 1) + 1; // 左节点，右节点
+            Object c = queue[child]; // 最小的节点值
             int right = child + 1;
             // 左子节点与右子节点比较，取最小的节点
             if (right < size && ((Comparable<? super E>) c).compareTo((E) queue[right]) > 0) {
                 log.info("【出队】左右子节点比对，获取最小值。left：{} right：{}", JSON.toJSONString(c), JSON.toJSONString(queue[right]));
+                c = queue[child = right];
             }
+            // 目标值与c比较，当目标值小于C，退出循环。说明此事目标值所在位置合适，迁移完成
+            if (key.compareTo((E) c) <= 0) {
+                log.info("比较结束退出循环");
+                break;
+            }
+            // 目标值小于c值，位置替换，继续比较
+            log.info("【出队】替换过程，节点的值比对。上节点：{}，下节点：{} 位置替换", JSON.toJSONString(queue[k]), JSON.toJSONString(c));
+            queue[k] = c;
+            k = child;
         }
-        
-        
+        log.info("【出队】替换结果，最终更换位置。Idx：{} Val：{}", k, JSON.toJSONString(key));
+        queue[k] = x;
+        log.info("【出队】最终的队列: {}", JSON.toJSONString(queue));
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public E peek() {
-        return null;
-    }
-
-    public int compareTo(E firstElement, E secondElement) {
-        throw new RuntimeException("未实现 compareTo 方法");
+        return (size == 0) ? null : (E) queue[0];
     }
 
 }

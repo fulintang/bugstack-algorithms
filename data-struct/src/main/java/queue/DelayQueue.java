@@ -45,9 +45,9 @@ public class DelayQueue<E extends Delayed> implements BlockingQueue<E> {
         lock.lock();
         try {
             E first = q.peek();
-            if (first == null || first.getDelay(TimeUnit.NANOSECONDS) > 0) {
+            if (first == null || first.getDelay(TimeUnit.NANOSECONDS) > 0) { // 时间没到就返回null
                 return null;
-            } else {
+            } else { // 时间到了就出队
                 return q.poll();
             }
         } finally {
