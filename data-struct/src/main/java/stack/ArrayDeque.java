@@ -37,6 +37,7 @@ public class ArrayDeque<E> implements Deque<E> {
     public ArrayDeque() {
         // 默认是16个长度，这里是小傅哥把长度缩短了的，便于测试，我这里也就保留了2的初始长度
         elements = new Object[2];
+        log.info("头：{}， 尾巴：{}", head, tail);
     }
 
     @Override
@@ -47,6 +48,7 @@ public class ArrayDeque<E> implements Deque<E> {
         // 这里的 & 是按位与计算，有0则为0，需要将两个数全部转换成二进制
         elements[head = (head - 1) & (elements.length - 1)] = e;
         log.info("push.idx head: {}", head);
+        log.info("头：{}， 尾巴：{}", head, tail);
         if (head == tail)
             doubleCapacity();
     }
@@ -55,20 +57,33 @@ public class ArrayDeque<E> implements Deque<E> {
      * 扩容，将容量扩充为原容量的2倍。仅在满时调整，即当头部和尾部缠绕成相等时。
      */
     private void doubleCapacity() {
-        assert head == tail;
+        assert head == tail; // ? 当头尾相等时才能进行扩容
         int p = head; // 头
-        int n = elements.length; // 数组长度
-        int r = n - p; //需要迁移的长度
-        int newCapacity = n << 1;
+        int oldArrLength = elements.length; // 数组长度
+        int r = oldArrLength - p; //需要迁移的长度
+        /*
+         * 右移1位，相当于乘以2，但是当达到极限大小时011111111111111111111111111111 = 2^31，
+         * 右移动就变成负数111111111111111111111111111111 = -1 （反补码）咯
+         */
+        int newCapacity = oldArrLength << 1;
         if (newCapacity < 0)
             throw new IllegalStateException("Sorry, deque too big");
         Object[] tempArr = new Object[newCapacity];
+        /*
+         * Params:
+         * src – the source array. 源数据Array
+         * srcPos – starting position in the source array. 源数组中起始位置
+         * dest – the destination array. 目标Array
+         * destPos – starting position in the destination data. 布标数组中起始位置
+         * length – the number of array elements to be copied. 要复制的数组元素个数
+         */
         // 第一次拷贝元素
         System.arraycopy(elements, p, tempArr, 0, r);
         System.arraycopy(elements, 0, tempArr, r, p);
         elements = tempArr;
-        head = 0;
-        tail = n;
+        head = 0; // 扩容后的头都是0
+        tail = oldArrLength; // 扩容后的尾都是扩容后的第一位
+        log.info("扩容后，头：{}， 尾巴：{}", head, tail);
     }
 
     @Override
