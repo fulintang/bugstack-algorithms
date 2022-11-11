@@ -44,10 +44,13 @@ public class ArrayDeque<E> implements Deque<E> {
     public void push(E e) {
         if (e == null)
             throw new NullPointerException();
-        log.info("head - 1 = {} Binary: {} , elements.length Binary = {}", head - 1, Integer.toBinaryString(head - 1), Integer.toBinaryString(elements.length - 1));
-        // 这里的 & 是按位与计算，有0则为0，需要将两个数全部转换成二进制
+        log.info("head - 1 = {} 二进制: {} , 数组长度二进制 = {}", head - 1, Integer.toBinaryString(head - 1), Integer.toBinaryString(elements.length - 1));
+        /*
+         * 这里的 & 是按位与计算，有0则为0，需要将两个数全部转换成二进制
+         * 规律，符号相同按位与取最小的，符号不同按位与取正书，
+         */
         elements[head = (head - 1) & (elements.length - 1)] = e;
-        log.info("push.idx head: {}", head);
+        log.info("放入数据坐标：{}", head);
         log.info("头：{}， 尾巴：{}", head, tail);
         if (head == tail)
             doubleCapacity();
@@ -58,9 +61,9 @@ public class ArrayDeque<E> implements Deque<E> {
      */
     private void doubleCapacity() {
         assert head == tail; // ? 当头尾相等时才能进行扩容
-        int p = head; // 头
+        int point = head; // 指针位置，按照逻辑是在中间
         int oldArrLength = elements.length; // 数组长度
-        int r = oldArrLength - p; //需要迁移的长度
+        int oldArrCenter = oldArrLength - point; // 数组一半的长度
         /*
          * 右移1位，相当于乘以2，但是当达到极限大小时011111111111111111111111111111 = 2^31，
          * 右移动就变成负数111111111111111111111111111111 = -1 （反补码）咯
@@ -78,8 +81,9 @@ public class ArrayDeque<E> implements Deque<E> {
          * length – the number of array elements to be copied. 要复制的数组元素个数
          */
         // 第一次拷贝元素
-        System.arraycopy(elements, p, tempArr, 0, r);
-        System.arraycopy(elements, 0, tempArr, r, p);
+        System.arraycopy(elements, point, tempArr, 0, oldArrCenter);
+        // 第二次拷贝元素
+        System.arraycopy(elements, 0, tempArr, oldArrCenter, point);
         elements = tempArr;
         head = 0; // 扩容后的头都是0
         tail = oldArrLength; // 扩容后的尾都是扩容后的第一位
@@ -94,6 +98,10 @@ public class ArrayDeque<E> implements Deque<E> {
         if (result == null)
             return null;
         elements[h] = null;
+        /*
+         * head如果超过元素数量的话
+         * 与计算head就会变成0
+         */
         head = (h + 1) & (elements.length - 1);
         log.info("pop.idx {} = {} & {}", head, Integer.toBinaryString(h + 1), Integer.toBinaryString(elements.length - 1));
         return result;
