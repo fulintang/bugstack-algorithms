@@ -28,7 +28,7 @@ public class Heap<E> implements IHeap<E> {
     public boolean add(E element) {
         return offer(element);
     }
-    
+
     @Override
     public boolean offer(E element) {
         if (element == null)
@@ -89,7 +89,7 @@ public class Heap<E> implements IHeap<E> {
         if (size == 0)
             return null;
         int lastPoint = --size;
-        E result = (E) queue[0];
+        E result = (E) queue[0]; // 堆顶元素要出堆
         E lastElement = (E) queue[lastPoint];
         queue[lastPoint] = null;
         if (lastPoint != 0)
@@ -105,10 +105,20 @@ public class Heap<E> implements IHeap<E> {
             int child = (point << 1) + 1;
             Object childElement = queue[child];
             int right = child + 1;
-            // 左右节点比较
-            
+            // 左右节点比较，找出最小节点
+            if (right < size && compareTo((E) childElement, (E) queue[right]) > 0) {
+                // 为何要小于size呢？因为如果大于size，那么就不存在右侧节点了啊
+                log.info("【出队】对比发现，右侧才是需要比对的值，left：{}, right：{}", JSON.toJSONString(childElement), JSON.toJSONString(queue[right]));
+                childElement = queue[child = right];
+            }
+            // 比较父节点和子节点的大小，如果
+            if (compareTo((E) childElement, lastElement) > 0) {
+                break;
+            }
+            queue[point] = childElement;
+            point = child;
         }
-        
+        queue[point] = lastElement;
     }
 
     @Override
@@ -117,7 +127,7 @@ public class Heap<E> implements IHeap<E> {
         return size == 0 ? null : (E) queue[0];
     }
 
-    private int compareTo(E firstElement, E secondElement) {
+    public int compareTo(E firstElement, E secondElement) {
         throw new RuntimeException("未实现compareTo方法");
     }
 
