@@ -71,9 +71,15 @@ public class HashTableTest {
         log.info("碰撞后 key：{} value：{}", "02", map.get("02"));
         log.info("碰撞后 key：{} value：{}", "09", map.get("09"));
         log.info("碰撞后 key：{} value：{}", "12", map.get("12"));
+        log.info("不存在的值 key：{} value：{}", "13", map.get("13"));
 
         log.info("数据结构：{}", map);
     }
     
+    @Test
+    public void testGetNotExistValue() {
+        Map<String, String> map = new HashMap04ByCoalescedHashing<>();
+        log.info("不存在的值 key：{} value：{}", "13", map.get("13"));
+    }
 
 }
